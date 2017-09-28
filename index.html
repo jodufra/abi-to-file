@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ABI to File</title>
+    <link rel="stylesheet" href="assets/prettify/prettify.css">
+    <link rel="stylesheet" href="assets/main.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <h1>ABI to File</h1>
+        <input id="contract_name" name="contract_name" placeholder="Name (ex: MyContract)" required></input>
+        <input id="contract_address" name="contract_address" placeholder="Contract Address (ex: 0x123456789ABCDEF1234567890ABCDEF123456789)" required></input>
+        <textarea id="contract_abi" name="contract_abi" cols="1" rows="10" placeholder="ABI in JSON format" required></textarea>
+        <button id="create" class="btn">Create</button>
+        <button id="clear" class="btn">Clear</button>
+        <hr>
+        <pre class="prettyprint lang-js"><code id="output">Output</code></pre>
+        <a id="download" class="btn" href="#">Download</a>
+    </div>
+    <script type="text/javascript" src="assets/prettify/prettify.js"></script>
+    <script type="text/javascript" src="assets/main.js"></script>
+</body>
+
+</html>

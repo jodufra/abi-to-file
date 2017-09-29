@@ -236,19 +236,20 @@ ABIToTs.prototype.appendMethod = function(method) {
         this.appendOutputTypes(method.outputs, true);
     }
     this.openBrackets();
-    this.output += 'return this.blockchainService.executeMethod(this, \'' + originalName + '\'';
+    this.output += 'return this.blockchainService.executeMethod(this, \'' + originalName + '\', ';
     if (method.inputs && method.inputs.length) {
-        this.output += ', ';
         if (method.inputs.length === 1) {
             this.output += method.inputs[0].name;
         } else {
             this.output += '{ ';
             for (i = 0; i < method.inputs.length; i++) {
-                this.output += method.inputs[i].name;
+                this.output += method.inputs[i].name ? method.inputs[i].name : method.inputs[i].type + '_' + i;
                 i + 1 < method.inputs.length && (this.output += ', ');
             }
             this.output += ' }';
         }
+    } else {
+        this.output += 'null';
     }
     this.output += ');';
     this.appendNewline();

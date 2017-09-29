@@ -245,12 +245,12 @@ ABIToTs.prototype.appendMethod = function(method) {
         if (method.inputs.length === 1) {
             this.output += this.getInputName(method.inputs[0], 0);
         } else {
-            this.output += '{ ';
+            // this.output += '{ ';
             for (i = 0; i < method.inputs.length; i++) {
                 this.output += this.getInputName(method.inputs[i], i);
                 i + 1 < method.inputs.length && (this.output += ', ');
             }
-            this.output += ' }';
+            // this.output += ' }';
         }
     } else {
         this.output += 'null';
@@ -295,7 +295,7 @@ ABIToTs.prototype.Run = function() {
 
     this.output += 'import { IContract } from \'./abstract/icontract\';';
     this.appendNewline();
-    this.output += 'import { BlockchainService } from \'../services/blockchain\';';
+    this.output += 'import { BlockchainService } from \'./_shared/services/blockchain\';';
     this.appendNewline();
     this.output += 'import { Observable } from \'rxjs/Observable\';';
     this.appendNewline();

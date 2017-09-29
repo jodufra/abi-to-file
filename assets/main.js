@@ -1,12 +1,15 @@
 (function() {
-    var contract_name = document.getElementById('contract_name'),
+    var contract_form = document.getElementById('contract_form'),
+        contract_name = document.getElementById('contract_name'),
         contract_address = document.getElementById('contract_address'),
         contract_abi = document.getElementById('contract_abi'),
-        createBtn = document.getElementById('create'),
+        // createBtn = document.getElementById('create'),
         clearBtn = document.getElementById('clear'),
         downloadBtn = document.getElementById('download');
 
-    createBtn.addEventListener('click', function() {
+    contract_form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
         var contractName = contract_name.value;
         var contractAddress = contract_address.value;
         var contractAbi = JSON.parse(contract_abi.value);
@@ -153,11 +156,12 @@ ABIToTs.prototype = Object.create(ABIParser.prototype);
 
 ABIToTs.prototype.constructor = ABIParser;
 
-ABIToTs.prototype.appendInput = function(input, inputIndex, appendComma) {
-    var name = input.name;
-    name = input.name ? input.name : input.type + '_' + inputIndex;
+ABIToTs.prototype.getInputName = function(input, inputIndex) {
+    return input.name ? input.name : input.type + '_' + inputIndex;
+};
 
-    this.output += name + ': ' + this.getInputType(input);
+ABIToTs.prototype.appendInput = function(input, inputIndex, appendComma) {
+    this.output += this.getInputName(input, inputIndex) + ': ' + this.getInputType(input);
     appendComma && (this.output += ', ');
 };
 
@@ -239,11 +243,11 @@ ABIToTs.prototype.appendMethod = function(method) {
     this.output += 'return this.blockchainService.executeMethod(this, \'' + originalName + '\', ';
     if (method.inputs && method.inputs.length) {
         if (method.inputs.length === 1) {
-            this.output += method.inputs[0].name;
+            this.output += this.getInputName(method.inputs[0], 0);
         } else {
             this.output += '{ ';
             for (i = 0; i < method.inputs.length; i++) {
-                this.output += method.inputs[i].name ? method.inputs[i].name : method.inputs[i].type + '_' + i;
+                this.output += this.getInputName(method.inputs[i], i);
                 i + 1 < method.inputs.length && (this.output += ', ');
             }
             this.output += ' }';
@@ -295,9 +299,12 @@ ABIToTs.prototype.Run = function() {
     this.appendNewline();
     this.output += 'import { Observable } from \'rxjs/Observable\';';
     this.appendNewline();
+    this.output += 'import { Injectable } from \'@angular/core\'';
+    this.appendNewline();
     this.appendNewline();
 
     this.output += '@Injectable()';
+    this.appendNewline();
     this.output += 'export class ' + this.abi.contractName + ' implements IContract';
     this.openBrackets();
     this.appendNewline();

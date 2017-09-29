@@ -153,8 +153,11 @@ ABIToTs.prototype = Object.create(ABIParser.prototype);
 
 ABIToTs.prototype.constructor = ABIParser;
 
-ABIToTs.prototype.appendInput = function(input, appendComma) {
-    this.output += input.name + ': ' + this.getInputType(input);
+ABIToTs.prototype.appendInput = function(input, inputIndex, appendComma) {
+    var name = input.name;
+    name = input.name ? input.name : input.type + '_' + inputIndex;
+
+    this.output += name + ': ' + this.getInputType(input);
     appendComma && (this.output += ', ');
 };
 
@@ -207,7 +210,7 @@ ABIToTs.prototype.appendConstructor = function(method) {
     if (method.inputs && method.inputs.length) {
         for (i = 0; i < method.inputs.length; i++) {
             this.output += 'private ';
-            this.appendInput(method.inputs[i], i + 1 < method.inputs.length);
+            this.appendInput(method.inputs[i], i, i + 1 < method.inputs.length);
         }
     }
     this.output += ')';
@@ -224,7 +227,7 @@ ABIToTs.prototype.appendMethod = function(method) {
     this.output += method.name + ' (';
     if (method.inputs && method.inputs.length) {
         for (i = 0; i < method.inputs.length; i++) {
-            this.appendInput(method.inputs[i], i + 1 < method.inputs.length);
+            this.appendInput(method.inputs[i], i, i + 1 < method.inputs.length);
         }
     }
     this.output += ')';
@@ -261,7 +264,7 @@ ABIToTs.prototype.appendEvent = function(method) {
     this.output += method.name + ' (';
     if (method.inputs && method.inputs.length) {
         for (i = 0; i < method.inputs.length; i++) {
-            this.appendInput(method.inputs[i], i + 1 < method.inputs.length);
+            this.appendInput(method.inputs[i], i, i + 1 < method.inputs.length);
         }
     }
     this.output += ')';
@@ -293,6 +296,7 @@ ABIToTs.prototype.Run = function() {
     this.appendNewline();
     this.appendNewline();
 
+    this.output += '@Injectable()';
     this.output += 'export class ' + this.abi.contractName + ' implements IContract';
     this.openBrackets();
     this.appendNewline();
@@ -344,7 +348,7 @@ var formats = {
 };
 formats.ts.types = {
     'bool': 'boolean',
-    'address': 'number',
+    'address': 'string',
     'string': 'string',
     'int': 'number',
     'uint': 'number'

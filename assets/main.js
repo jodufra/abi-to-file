@@ -162,12 +162,15 @@ ABIToTs.prototype.appendOutputTypes = function(outputs) {
     var out = null;
     if (outputs.length === 1) {
         out = outputs[0];
-        this.output += 'Observable< ' + this.getInputType(out) + ' ' + out.name + ' >';
+        this.output += 'Observable< ';
+        (out.name) && (this.output += out.name + ' : ');
+        this.output += this.getInputType(out) + ' >';
     } else {
         this.output += 'Observable<{ ';
         for (i = 0; i < outputs.length; i++) {
             out = outputs[i];
-            this.output += out.name + ' : ' + this.getInputType(out);
+            (out.name) && (this.output += out.name + ' : ');
+            this.output += this.getInputType(out);
             i + 1 < outputs.length && (this.output += ', ');
         }
         this.output += ' }>';

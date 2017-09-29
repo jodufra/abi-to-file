@@ -158,24 +158,19 @@ ABIToTs.prototype.appendInput = function(input, appendComma) {
     appendComma && (this.output += ', ');
 };
 
-ABIToTs.prototype.appendOutputTypes = function(outputs, appendName) {
+ABIToTs.prototype.appendOutputTypes = function(outputs) {
     var out = null;
     if (outputs.length === 1) {
         out = outputs[0];
-
-        this.output += 'Observable<' + this.getInputType(out);
-        appendName && (this.output += ' ' + out.name);
-        this.output += '>';
+        this.output += 'Observable< ' + this.getInputType(out) + ' ' + out.name + ' >';
     } else {
-        this.output += 'Observable<{';
+        this.output += 'Observable<{ ';
         for (i = 0; i < outputs.length; i++) {
             out = outputs[i];
-
-            appendName && (this.output += out.name + ':');
-            this.output += this.getInputType(out);
-            i + 1 < outputs.length && (this.output += ',');
+            this.output += out.name + ' : ' + this.getInputType(out);
+            i + 1 < outputs.length && (this.output += ', ');
         }
-        this.output += '}>';
+        this.output += ' }>';
     }
 };
 
@@ -192,7 +187,7 @@ ABIToTs.prototype.appendDocs = function(method, title) {
     }
     if (method.outputs && method.outputs.length) {
         this.output += ' * @returns {';
-        this.appendOutputTypes(method.outputs, true);
+        this.appendOutputTypes(method.outputs);
         this.output += '}';
         this.appendNewline();
     }
@@ -232,7 +227,7 @@ ABIToTs.prototype.appendMethod = function(method) {
     this.output += ')';
     if (method.outputs && method.outputs.length) {
         this.output += ' : ';
-        this.appendOutputTypes(method.outputs, false);
+        this.appendOutputTypes(method.outputs, true);
     }
     this.openBrackets();
     this.output += 'return this.blockchainService.executeMethod(this, \'' + originalName + '\'';
@@ -241,12 +236,12 @@ ABIToTs.prototype.appendMethod = function(method) {
         if (method.inputs.length === 1) {
             this.output += method.inputs[0].name;
         } else {
-            this.output += '{';
+            this.output += '{ ';
             for (i = 0; i < method.inputs.length; i++) {
                 this.output += method.inputs[i].name;
-                i + 1 < method.inputs.length && (', ');
+                i + 1 < method.inputs.length && (this.output += ', ');
             }
-            this.output += '}';
+            this.output += ' }';
         }
     }
     this.output += ');';
@@ -269,7 +264,7 @@ ABIToTs.prototype.appendEvent = function(method) {
     this.output += ')';
     if (method.outputs && method.outputs.length) {
         this.output += ' : ';
-        this.appendOutputTypes(method.outputs, false);
+        this.appendOutputTypes(method.outputs);
     }
     this.openBrackets();
     this.output += 'return this.blockchainService.watch(this, \'' + originalName + '\');';
@@ -297,6 +292,7 @@ ABIToTs.prototype.Run = function() {
 
     this.output += 'export class ' + this.abi.contractName + ' implements IContract';
     this.openBrackets();
+    this.appendNewline();
     this.output += 'IBArray = ' + JSON.stringify(this.abi.ABIArray) + ';';
     this.appendNewline();
     this.output += 'Address = ' + this.abi.contractAddress + ';';
@@ -305,6 +301,8 @@ ABIToTs.prototype.Run = function() {
 
     if (this.abi.contractConstructor !== null) {
         this.appendConstructor(this.abi.contractConstructor);
+    } else {
+        this.appendConstructor({ 'name': '', 'inputs': [] });
     }
 
     for (m = 0; m < this.abi.contractMethods.length; m++) {
